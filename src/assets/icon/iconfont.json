@@ -1,0 +1,86 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "393355",
+      "name": "信息",
+      "font_class": "communicate",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "689204",
+      "name": "编辑 铅笔 写 输入",
+      "font_class": "bianjiqianbixieshuru",
+      "unicode": "e7c8",
+      "unicode_decimal": 59336
+    },
+    {
+      "icon_id": "852109",
+      "name": "我的",
+      "font_class": "mine",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "947484",
+      "name": "图片",
+      "font_class": "tupian",
+      "unicode": "e64a",
+      "unicode_decimal": 58954
+    },
+    {
+      "icon_id": "2118512",
+      "name": "添加关注(话题)",
+      "font_class": "jiaguanzhuhuati",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
+      "icon_id": "2742627",
+      "name": "地球",
+      "font_class": "diqiu",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    },
+    {
+      "icon_id": "3287464",
+      "name": "添加",
+      "font_class": "icon-",
+      "unicode": "e6db",
+      "unicode_decimal": 59099
+    },
+    {
+      "icon_id": "4954929",
+      "name": "视频",
+      "font_class": "shipin",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "5034919",
+      "name": "搜索",
+      "font_class": "sousuo",
+      "unicode": "e60c",
+      "unicode_decimal": 58892
+    },
+    {
+      "icon_id": "6027497",
+      "name": "首页",
+      "font_class": "shouye",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    },
+    {
+      "icon_id": "8348151",
+      "name": "文件",
+      "font_class": "wenjian",
+      "unicode": "e721",
+      "unicode_decimal": 59169
+    }
+  ]
+}
