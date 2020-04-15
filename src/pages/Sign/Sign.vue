@@ -18,7 +18,7 @@
                 <input type="tel" maxlength="8" placeholder="验证码" v-model="registerCode">
               </section>
               <section class="sign_message">
-                <input type="text" maxlength="11" placeholder="昵称" v-model="userName" @keyup.enter="checkUserName">
+                <input type="text" maxlength="11" placeholder="用户名" v-model="userName" @keyup.enter="checkUserName">
               </section>
               <section class="sign_message">
                 <span>学校信息:</span>
@@ -26,9 +26,9 @@
                   <option value="" disabled selected>-请选择省份-</option>
                   <option  v-for="(item,i) in provinceArr" :key="i" :value="item.regionId" >{{item.regionName}}</option>
                 </select>&nbsp;&nbsp;-
-                <select class="campusName" @change="getCampusInfo" id="campusId">
+                <select class="campusName" @change="getCampusInfo()" id="campusId" >
                   <option value="" disabled selected>-请选择学校-</option>
-                  <option v-for="(item,i) in campusArr" :key="i" :value="item.campusId"   v-model="campusId">{{item.campusName}}</option>
+                  <option v-for="(item,i) in campusArr" :key="i" :value="item.campusId"  v-model="campusId">{{item.campusName}}</option>
                 </select>
               </section>
               <section class="sign_message">
@@ -51,7 +51,7 @@
         <a href="javascript:;" class="about_us">关于我们</a>
       </div>
       <a href="javascript:" class="go_back" @click="$router.back()">
-        <i class="iconfont icon-">back</i>
+        <i class="iconfont icon-jiaguanzhuhuati"></i>
       </a>
     </div>
     <AlertTip :alertText="alertText" v-show="alertShow" @closeTip="closeTip"/>
@@ -61,11 +61,14 @@
 <script>
   import AlertTip from '../../components/AlertTip/AlertTip'
   import axios from 'axios'
-  const  BASE_URL='http://server.campus.com'
+  import {mapActions, mapState} from 'vuex'
+  import {reqProvince,reqCampus,reqCheckPhone,reqCheckUsername,reqRegisterCode,reqRegisterUser} from "../../api";
+
   export default {
+
     data(){
       return{
-        provinceArr: [],
+        //provinceArr: [],
         campusArr: [],
         regionId:'',//省份id
         campusId:'',//学校id
@@ -83,17 +86,51 @@
       }
     },
     computed:{
+      ...mapState(['provinceArr']),
       rightPhone(){
         return /^1\d{10}$/.test(this.userPhone)
       },
     },
     mounted() {
-      this.getProvince();
+      //this.$store.dispatch('getProvince')
+      this.getProvince()
+      //this.getCampus()
     },
     methods: {
+      ...mapActions(['getProvince','getCampus']),
       //验证手机号是否重复 如果不重复则异步获取短信验证码
-      getCode(){
-        axios.get(BASE_URL+'/ucs/register/validatePhone?mobilePhone='+this.userPhone).then((result)=>{
+      async getCode(){
+        const result=await reqCheckPhone(this.userPhone)
+        if (result===false){
+          //显示提示
+          this.showAlert('该手机号已注册')
+        }else{
+          //如果当前没有计时
+          if(!this.computerTime){
+            //启动倒计时
+            this.computerTime=120
+            this.intervalId=setInterval(()=>{
+              this.computerTime--
+              if(this.computerTime<=0){
+                //停止计时
+                clearInterval(this.intervalId)
+              }
+            },1000)
+            const result=await reqRegisterCode(this.userPhone)
+            console.log(result)
+            if(result.status===500){
+              //显示提示
+              this.showAlert(result.message)
+              //停止倒计时
+              if(this.computerTime) {
+                this.computerTime = 0
+                clearInterval(this.intervalId)
+                this.intervalId = undefined
+              }
+            }
+          }
+        }
+       /* axios.get(BASE_URL+'/ucs/register/validatePhone?mobilePhone='+this.userPhone).then((result)=>{
           if (result.data===false){
             //显示提示
             this.showAlert('该手机号已注册')
@@ -124,23 +161,28 @@
               })
             }
           }
-        })
+        })*/
       },
       //检验用户名是否重复
-      checkUserName() {
+      async checkUserName() {
         if (this.userName==''){
           this.showAlert('用户名不能为空')
         }else{
-          axios.get(BASE_URL+'/ucs/register/validateUsername?userName='+this.userName).then((result)=>{
+          const result=await reqCheckUsername(this.userName)
+          if (result.data===false){
+            //显示提示
+            this.showAlert('该用户名已存在')
+          }
+          /*axios.get('http://server.campus.com/ucs/register/validateUsername?userName='+this.userName).then((result)=>{
             if (result.data===false){
               //显示提示
               this.showAlert('该用户名已存在')
             }
-          })
+          })*/
         }
       },
       //得到省份数据
-      getProvince() {
+    /*  getProvince() {
         axios.get(BASE_URL + "/ucs/register/provinceList")
           .then((result) => {
             let len=result.data.length
@@ -150,14 +192,14 @@
             console.log(error)
         });
 
-      },
+      },*/
       //得到学校数据
       getCampus: function () {
 /*        let regions = document.getElementById("provinceId")
         let selectedIndex = regions.selectedIndex;
         let regionId = regions.options[selectedIndex].value;*/
         let len = this.provinceArr.length
-        axios.get(BASE_URL + "/ucs/register/campusList/" + this.regionId)
+        axios.get("http://server.campus.com/ucs/register/campusList/" + this.regionId)
           .then((res) => {
             this.campusArr = res.data
           })
@@ -169,17 +211,12 @@
       getCampusInfo:function(){
         let regions = document.getElementById("campusId")
         let selectedIndex = regions.selectedIndex;
-        let campusId = regions.options[selectedIndex].value;
-        let campusName = regions.options[selectedIndex].innerHTML;
-        this.campusId=campusId
-        this.campusName=campusName
-        //console.log(this.campusId,this.campusName)
+        this.campusId= regions.options[selectedIndex].value;
+        this.campusName = regions.options[selectedIndex].innerHTML;
+
+        console.log(this.campusId,this.campusName)
       },
-      //错误提示弹框
-      showAlert(alertText) {
-        this.alertShow = true;
-        this.alertText = alertText;
-      },
+
       //保存用户注册信息  localhost:server.campus.com/ucs/register/user
       async sign(){
         // 前台表单验证
@@ -198,7 +235,7 @@
           return
         }
         //发送请求短信登录
-        axios.post(BASE_URL+'/ucs/register/user',
+        axios.post('http://server.campus.com/ucs/register/user',
           {
             "campusId":this.campusId,
             "campusName":this.campusName,
@@ -225,6 +262,11 @@
           }
         })
       },
+      //错误提示弹框
+      showAlert(alertText) {
+        this.alertShow = true;
+        this.alertText = alertText;
+      },
       // 关闭警告框
       closeTip () {
         this.alertShow = false
@@ -239,9 +281,10 @@
 
 <style lang="stylus" rel="stylesheet/stylus">
   .signContainer
-    width 100%
+    width 10rem
     height 100%
     background #fff
+    position relative
     .signInner
       padding-top 60px
       width 80%
@@ -257,222 +300,110 @@
           text-align center
           >a
             color #333
-            font-size 14px
+            font-size 28px
             padding-bottom 4px
             &:first-child
               margin-right 40px
             &.on
               color darkorange
               font-weight 700
-              border-bottom 2px solid darkorange
+              border-bottom 4px solid darkorange
       .sign_content
         >form
           >div
             input
               width 100%
-              height 100%
+              height 80px
               padding-left 10px
               box-sizing border-box
               border 1px solid #ddd
-              border-radius 4px
+              border-radius 16px
               outline 0
-              font 400 14px Arial
+              font 400 26px Arial
               &:focus
                 border 1px solid darkorange
             .sign_message
               position relative
-              margin-top 16px
-              height 48px
-              font-size 14px
+              margin-top 30px
+              height 80px
+              font 400 26px Arial
               background #fff
               .get_verification
+                width: 150px;
                 position absolute
                 top 50%
-                right 10px
+                right 20px
                 transform translateY(-50%)
                 border 0
                 color #ccc
-                font-size 14px
+                font-size 20px
                 background transparent
                 &.right_phone
                   color black
             .sign_verification
               position relative
-              margin-top 16px
-              height 48px
-              font-size 14px
+              margin-top 40px
+              height 80px
+              font-size 22px
               background #fff
             .sign_hint
-              margin-top 12px
+              margin-top 22px
               color #999
-              font-size 14px
-              line-height 20px
+              font-size 24px
+              line-height 28px
               >a
                 color darkorange
           .sign_submit
             display block
             width 100%
-            height 42px
+            height 65px
             margin-top 30px
-            border-radius 4px
+            border-radius 16px
             background darkorange
             color #fff
             text-align center
-            font-size 16px
-            line-height 42px
+            font-size 24px
+            line-height 65px
             border 0
         .about_us
           display block
-          font-size 12px
+          font-size 22px
           margin-top 20px
           text-align center
           color #999
       .go_back
         position absolute
-        top 5px
-        left 5px
-        width 30px
-        height 30px
+        top 10px
+        left 30px
+        text-decoration none
+        width 50px
+        height 50px
+        line-height 50px
+        text-align center
+        margin 3px 5px 0
+        color #ee9900
         >.iconfont
-          font-size 20px
-          color #999
-  .captcha{
-    width:124px;
-    height:31px;
-    border:1px solid rgba(186,186,186,1);
-  }
+          font-size 36px
+          color darkorange
   .get_verification{
     cursor: pointer;
+    width:120px;
+    height:70px;
+    border:1px solid rgba(186,186,186,1);
+    position absolute
+    top 10px
   }
   span,select{
-    margin  5px auto
+    margin  10px auto
     padding-left 10px
     color #7e8c8d
   }
-
   select{
+    border-radius 5px
     margin-left 10px
-    width 30%
-    height 40px
+    width 35%
+    height 60px
+    font-size 24px
   }
 
-     /* .sign_content
-        >form
-          >div
-            input
-              width 100%
-              height 100%
-              padding-left 10px
-              margin  10px auto
-              box-sizing border-box
-              border 1px solid #ddd
-              border-radius 4px
-              outline 0
-              font 400 14px Arial
-              &:focus
-                border 1px solid darkorange
-            span,select
-              margin  10px auto
-              padding-left 10px
-              color #7e8c8d
-            select
-              margin-left 10px
-              width 110px
-              height 50px
-            .sign_message
-              position relative
-              margin-top 16px
-              height 48px
-              font-size 14px
-              background #fff
-              .get_verification
-                position absolute
-                top 50%
-                right 10px
-                transform translateY(-50%)
-                border 0
-                color #ccc
-                font-size 14px
-              .sign_verification
-                position relative
-                margin-top 16px
-                height 48px
-                font-size 14px
-                background #fff
-               !* .switch_button
-                  font-size 12px
-                  border 1px solid #ddd
-                  border-radius 8px
-                  transition background-color .3s,border-color .3s
-                  padding 0 6px
-                  width 30px
-                  height 16px
-                  line-height 16px
-                  color #fff
-                  position absolute
-                  top 50%
-                  right 10px
-                  transform translateY(-50%)
-                  &.off
-                    background #fff
-                    .switch_text
-                      float right
-                      color #ddd
-                  &.on
-                    background darkorange
-                  >.switch_circle
-                    position absolute
-                    top -1px
-                    left -1px
-                    width 16px
-                    height 16px
-                    border 1px solid #ddd
-                    border-radius 50%
-                    background #fff
-                    box-shadow 0 2px 4px 0 rgba(0,0,0,.1)
-                    transition transform .3s
-                    &.right
-                      transform translateX(30px)*!
-            .sign_hint
-              margin-top 12px
-              color #999
-              font-size 14px
-              line-height 20px
-              >a
-                color darkorange
-          .sign_submit
-            display block
-            width 100%
-            height 42px
-            margin-top 430px
-            border-radius 4px
-            background darkorange
-            color #fff
-            text-align center
-            font-size 16px
-            line-height 42px
-            border 0
-        .about_us
-          display block
-          font-size 12px
-          margin-top 20px
-          text-align center
-          color #999
-      .go_back
-        position absolute
-        top 5px
-        left 5px
-        width 30px
-        height 30px
-        >.iconfont
-          font-size 20px
-          color #999
-  .captcha{
-    width:124px;
-    height:31px;
-    border:1px solid rgba(186,186,186,1);
-  }
-  .get_verification{
-    cursor: pointer;
-  }*/
 </style>

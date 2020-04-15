@@ -1,4 +1,6 @@
-/*vuex最核心的管理对象*/
+/*
+vuex最核心的管理对象
+*/
 import Vue from 'vue'
 import Vuex from 'vuex'
 import state from './state'

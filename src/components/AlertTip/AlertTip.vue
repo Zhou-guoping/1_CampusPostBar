@@ -39,9 +39,11 @@
       transform: scale(1)
 
   .alert_container
+    width 10rem
     position: fixed;
     top: 0;
-    left: 0;
+    left: 50%
+    transform translateX(-50%)
     right: 0;
     bottom: 0;
     z-index: 200;
@@ -50,10 +52,8 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      margin-top: -90px
-      margin-left: -110px
+      transform translate(-50%,-50%)
       width: 60%
-      animation: tipMove .4s;
       background-color: rgba(255, 255, 255, 1);
       border: 1px;
       padding-top: 20px

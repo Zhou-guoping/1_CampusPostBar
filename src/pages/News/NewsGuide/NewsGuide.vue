@@ -33,11 +33,12 @@
     border-bottom: 1px solid #e4e4e4;
     position: fixed;
     z-index:100;
-    left:0;
+    left:50%;
+    transform translateX(-50%)
     right: 0;
     top:0;
     background-color :#fff;
-    width :100%;
+    width :10rem;
     height :60px;
     display :flex;
   }

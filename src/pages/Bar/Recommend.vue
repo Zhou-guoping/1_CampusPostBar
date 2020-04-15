@@ -1,10 +1,12 @@
 <template>
-  <div>
+  <section>
     <BarGuide/>
+
     <FooterGuide/>
-    <div class="recommend">
-      <span style="font: 20px bold;margin: 4px 10px;">猜你喜欢</span>
+    <section class="recommend">
+      <span class="guess_like" >猜你喜欢</span>
       <span class="recommend_change">换一批</span>
+      <p v-time="timeNow"></p>
       <ul class="recommend_list">
         <li class="recommend_li">
           <a>
@@ -78,15 +80,27 @@
             <div class="recommend_to">关注</div>
           </a>
         </li>
-
       </ul>
-    </div>
-  </div>
+    </section>
+
+  </section>
+
 </template>
 <script>
   import BarGuide from './BarGuide/BarGuide.vue'
   import FooterGuide from '../../components/FooterGuide/FooterGuide.vue'
+  import '../../common/time'
   export default {
+    data(){
+      return{
+        timeNow:'2020-04-14 14:35:11'  // 1586837994339 刚刚
+      }
+    },
+    mounted() {
+      console.log(new Date('2020-04-14 14:35:11')+'1')
+      console.log(Date.now()+'2')
+      console.log(Date.parse('2020-04-14 14:35:11')+'3')
+    },
     components: {
       BarGuide,
       FooterGuide
@@ -95,58 +109,76 @@
 </script>
 <style>
   .recommend{
-    margin-top: 75px;
+    width: 10rem;
+    margin-top: 80px;
+    position: relative;
+  }
+  .guess_like{
+    font-size: 26px;
+    margin-left: 15px;
   }
   .recommend_change{
-    margin-top: 4px;
+    margin-top: 8px;
     position: absolute;
-    right:10px;
+    right:20px;
+    font-size: 20px;
+    color: #0086b3;
   }
   .recommend_list{
-    margin-top: 6px;
+    text-align: center;
+    margin-top: 20px;
   }
   .recommend_li{
     border-bottom: 2px solid #e4e4e4;
     width: 45%;
     float: left;
     text-align: center;
-    margin-right: 20px;
+    margin-left: 3%;
+    margin-top: 16px;
+  }
+  .recommend_li:nth-child(2n-1){
+    border-right: 2px solid #e4e4e4;
+  }
+  .recommend_li:nth-child(2n){
+    border-left: 2px solid #e4e4e4;
   }
   .recommend_img{
-    width:60px;
-    height: 60px;
+    width:80px;
+    height: 80px;
     background:url("../../components/BarList/images/head2.jpg");
     background-size: 100% 100%;
-    border-radius: 20px;
-    margin: 6px auto;
+    border-radius: 25px;
+    margin: 20px auto;
   }
   .recommend_title{
     color: #000;
-    font-size: 16px;
-    margin-top: 6px;
+    font-size: 24px;
+    margin-top: 12px;
   }
   .recommend_num{
-    margin-top: 6px;
+    margin-top: 10px;
   }
   .recommend_num span{
-    margin-top: 6px;
-    font-size: 14px;
-    line-height: 14px;
+    font-size: 20px;
+    line-height: 22px;
   }
   .recommend_describle{
     color: #000;
-    font-size: 14px;
-    margin-top: 6px;
-    line-height: 16px;
+    font-size: 20px;
+    margin-top: 16px;
+    line-height: 24px;
   }
   .recommend_to{
-    width:55px;
-    height: 20px;
+    display: inline-block;
+    width:80px;
+    height: 30px;
     background-color: skyblue;
-    margin: 8px auto;
-    font-size: 16px;
-    line-height: 16px;
+    margin: 20px auto;
+    font-size: 22px;
+    line-height: 22px;
     padding-top: 5px;
+    text-align: center;
     border-radius: 15px;
+    color: #e4e4e4;
   }
 </style>

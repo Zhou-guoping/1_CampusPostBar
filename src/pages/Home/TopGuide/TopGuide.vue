@@ -22,10 +22,16 @@
         <span>资料</span>
         <div :class="{bar_on:'/home/materials'===$route.path}" @click="goTo('/home/materials')"> </div>
       </a>
-      <div class="top_guide_add" :class="{on:'/home/materials'===$route.path}" @click="goTo('/home/materials')">
-      <span class="item_icon">
+
+      <div class="top_guide_add" @click="showAddList?showAddList=false:showAddList=true">
+        <span class="item_icon" >
           <i class="iconfont icon-icon-"></i>
-      </span>
+        </span>
+        <ul class="add_li" v-show="showAddList">
+          <li class="add_choose" style="color: red"> <router-link to="/home/addFriendNewsPic"><i class="iconfont icon-tupian" style="color: #ee9900"></i> <span>图片</span></router-link></li>
+          <li class="add_choose"> <router-link to="/home/addFriendNewsVideo"><i class="iconfont icon-shipin" style="color: aquamarine"></i> <span>视频</span></router-link></li>
+          <li class="add_choose"> <router-link to="/home/addFriendNewsFile"><i class="iconfont icon-wenjian" style="color: #DD4A68"></i> <span>资料</span></router-link></li>
+        </ul>
       </div>
     </div>
   </div>
@@ -34,6 +40,14 @@
 
 <script>
   export default {
+    data(){
+      return {
+        showAddList:false
+      }
+    },
+    mounted() {
+
+    },
     methods:{
       goTo(path){
         this.$router.replace(path)
@@ -42,32 +56,31 @@
   }
 </script>
 
-<style rel="stylesheet">
+<style rel="stylesheet" scoped="scoped">
   .top{
     position: fixed;
     z-index:100;
-    left:0;
-    right: 0;
+    left:50%;
+    transform: translateX(-50%);
     top:0;
     background-color :#fff;
-    width :100%;
-    height :80px;
+    width :10rem;
+    box-sizing: border-box;
+    border-bottom: 2px solid #e4e4e4;
   }
   .search_link_text{
     width:90%;
-    height: 30px;
-    border-radius: 20px 20px;
-    border-color: #0086b3;
+    height: 50px;
+    border-radius: 25px 25px;
     border: solid #ffffff;
-    margin: 5px 4% 0;
+    margin: 4px 4% 0;
     text-align: center;
     background-color: #eeeeee;
+    font-size: 18px;
   }
   .top_guide{
-    border-bottom: 1px solid #e4e4e4;
-    background-color :#fff;
     width :100%;
-    height :50px;
+    height :60px;
     display :flex;
   }
   .top_guide_item,.top_guide_add{
@@ -76,31 +89,56 @@
     flex: 1;*/
     flex-direction: column;
     /*    align-items: center;*/
-    margin: 10px 20px;
+    margin: 10px 40px;
     color: #222222;
+
   }
-  .top_guide_item.on{
-    color:orange;
-  }
+
   .bar_on{
-    width: 40px;
-    height: 5px;
-    border-radius: 5px;
+    width: 55px;
+    height: 6px;
+    border-radius: 10px;
     background-color:orange;
-    margin-top: 5px;
+    margin-top: 6px;
   }
 
   .top_guide_item span{
-    font-size: 18px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 4px;
+    margin-bottom: 4px;
   }
+
   .top_guide_add{
     position: absolute;
-    right: 5px;
+    right: -20px;
+    bottom: -10px;
     color: orange;
   }
-  .icon-icon-{
-    font-size: 20px;
+  .add_li{
+    width: 200px;
+    margin-top: 4px;
+    position: absolute;
+    left: -165px;
+    font-size: 26px;
+    background: rgba(0, 0, 0, 0.85);
+    border-radius: 10px;
+  }
+  .add_choose:last-child{
+    border-bottom: transparent;
+  }
+  .add_choose{
+    border-bottom: 2px solid rgba(51, 38, 38, 0.85);
+    height: 80px;
+    color: orange;
+    font-size: 30px;
+    line-height: 80px;
+    text-align: center;
+  }
+  .iconfont{
+    font-size: 40px;
+  }
+  .add_choose span{
+    color: rgba(255, 255, 255, 0.7);
   }
 </style>

@@ -1,0 +1,23 @@
+/*变量命名*/
+/*变量引用*/
+div {
+  background-color: pink;
+  font-size: 16px;
+}
+/*嵌套*/
+.nav {
+  width: 100px;
+  height: 100px;
+}
+.nav .logo {
+  background-color: #fff;
+}
+.nav a {
+  color: red;
+  /*伪类*/
+}
+.nav a:hover {
+  color: blue;
+}
+/*运算符左右两侧必须加运算符*/
+/*# sourceMappingURL=my.css.map */

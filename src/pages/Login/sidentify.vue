@@ -130,12 +130,18 @@ export default {
     }
  }
 </script>
- <style scoped>
- .s-canvas {
-       height: 38px;
+ <style>
+.s-canvas {
+   width: 120px;
+   height: 70px;
  }
+#s-canvas{
+  width: 110px;
+  height: 60px;
+}
 .s-canvas canvas{
-          margin-top: 1px;
-            margin-left: 8px;
-       }
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
 </style>

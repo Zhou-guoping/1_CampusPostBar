@@ -2,19 +2,58 @@
 ajax请求函数模块
 返回值: promise对象(异步返回的数据是: response.data)
  */
+
+import axios from 'axios'
+export default function ajax (url, data={}, type='GET') {
+
+  return new Promise(function (resolve, reject) {
+    // 执行异步ajax请求
+    let promise
+    if (type === 'GET') {
+      // 准备url query参数数据
+      let dataStr = '' //数据拼接字符串
+      Object.keys(data).forEach(key => {
+        dataStr += key + '=' + data[key] + '&'
+      })
+      if (dataStr !== '') {
+        dataStr = dataStr.substring(0, dataStr.lastIndexOf('&'))
+        url = url + '?' + dataStr
+      }
+      // 发送get请求
+      promise = axios.get(url)
+    } else if(type==='POST'){
+      // 发送post请求
+      promise = axios.post(url, data)
+    }else if(type==='PUT'){
+      // 发送put请求
+      promise = axios.put(url, data)
+    }else {
+      // delete
+      promise = axios.delete(url, data)
+    }
+    promise.then(function (response) {
+      // 成功了调用resolve()
+      resolve(response.data)
+    }).catch(function (error) {
+      //失败了调用reject()
+      reject(error)
+    })
+  })
+}
+
 /**
  * axios封装
  * 请求拦截、响应拦截、错误统一处理
  */
-import axios from 'axios';
+/*import axios from 'axios';
 import router from '../router';
 import store from '../store/index';
 import { Toast } from 'vant';
 
-/**
+/!**
  * 提示函数
  * 禁止点击蒙层、显示一秒后关闭
- */
+ *!/
 const tip = msg => {
   Toast({
     message: msg,
@@ -23,10 +62,10 @@ const tip = msg => {
   });
 }
 
-/**
+/!**
  * 跳转登录页
  * 携带当前页面路由，以期在登录页面完成登录后返回当前页面
- */
+ *!/
 const toLogin = () => {
   router.replace({
     path: '/login',
@@ -36,10 +75,10 @@ const toLogin = () => {
   });
 }
 
-/**
+/!**
  * 请求失败后的错误统一处理
  * @param {Number} status 请求失败的状态码
- */
+ *!/
 const errorHandle = (status, other) => {
   // 状态码判断
   switch (status) {
@@ -69,10 +108,10 @@ const errorHandle = (status, other) => {
 let instance = axios.create({    timeout: 1000 * 12});
 // 设置post请求头
 instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-/**
+/!**
  * 请求拦截器
  * 每次请求前，如果存在token则在请求头中携带token
- */
+ *!/
 instance.interceptors.request.use(
   config => {
     // 登录流程控制中，根据本地是否存在token判断用户的登录情况
@@ -105,39 +144,10 @@ instance.interceptors.response.use(
     }
   });
 
-export default instance;
+export default instance;*/
 
 
-// export default function ajax (url, data={}, type='GET') {
-//
-//   return new Promise(function (resolve, reject) { //resolve reject为高阶函数
-//     // 执行异步ajax请求
-//     let promise
-//     if (type === 'GET') {
-//       // 准备url query参数数据
-//       let dataStr = '' //数据拼接字符串
-//       Object.keys(data).forEach(key => {
-//         dataStr += key + '=' + data[key] + '&'
-//       })
-//       if (dataStr !== '') {
-//         dataStr = dataStr.substring(0, dataStr.lastIndexOf('&'))
-//         url = url + '?' + dataStr
-//       }
-//       // 发送get请求
-//       promise = axios.get(url)
-//     } else {
-//       // 发送post请求
-//       promise = axios.post(url, data)
-//     }
-//     promise.then(function (response) {
-//       // 成功了调用resolve()
-//       resolve(response.data)
-//     }).catch(function (error) {
-//       //失败了调用reject()
-//       reject(error)
-//     })
-//   })
-// }
+
 /*
 const response = await ajax()
 const result = response.data

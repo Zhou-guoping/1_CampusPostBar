@@ -10,6 +10,17 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
+      '/api':{ //匹配所有以'/api'开头的请求路径
+        target:'http://server.campus.com',  //代理目标的基础路径
+        ws:false,
+        secure:false,
+        changeOrigin:true,  //支持跨域
+        pathRewrite:{  //重写路径：去掉路径中开头的'/api'
+          '^/api': ''
+        }
+      }
+    },
+   /* proxyTable: {
       'server.campus.com':{
         target:'http://server.campus.com',
         ws:false,
@@ -19,7 +30,7 @@ module.exports = {
           'server.campus.com':''
         }
       }
-    },
+    },*/
 
     // Various Dev Server settings
     host: 'local.campus.com', // can be overwritten by process.env.HOST
@@ -69,7 +80,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

@@ -28,32 +28,33 @@
     border-bottom: 1px solid #e4e4e4;
     position: fixed;
     z-index:100;
-    left:0;
+    left:50%;
+    transform translateX(-50%)
     right: 0;
     top:0;
     background-color :#fff;
-    width :100%;
-    height :60px;
+    width :10rem;
+    height :80px;
     display :flex;
   }
   .bar_guide_item{
-    margin: 18px 20px;
+    margin: 20px 30px;
     color: #222222;
   }
   .bar_guide_item.on{
     color:orange;
   }
   .bar_on{
-    width: 35px;
+    width: 52px;
     height: 5px;
     border-radius: 5px;
     background-color:orange;
-    margin-top: 5px;
+    margin-top: 15px;
   }
 
   .bar_guide_item span{
-    font-size: 18px;
+    font-size: 26px;
     margin-top: 2px;
-    margin-bottom: 2px;
+    font-weight :bold;
   }
 </style>

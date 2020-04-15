@@ -1,5 +1,5 @@
 <template>
-  <section class="loginContainer">
+  <section class="loginContainer" >
     <div class="loginInner">
       <div class="login_header">
         <h2 class="login_logo">校园贴吧</h2>
@@ -42,7 +42,7 @@
               <section class="login_message"  style="display: flex;">
                 <input type="text" maxlength="11" placeholder="验证码"  id="captcha" autocomplete="off" v-model="captcha">
                 <!--<img class="get_verification" src="http://localhost:4000/captcha" alt="captcha" @click="getCaptcha" ref="captcha">-->
-                <div class="get_verification" @click="refreshCode">
+                <div class="get_verification"  @click="refreshCode">
                   <!--验证码组件-->
                   <s-identify :identifyCode="identifyCode"></s-identify>
                 </div>
@@ -59,7 +59,7 @@
         <a href="javascript:;" class="about_us">关于我们</a>
       </div>
       <a href="javascript:" class="go_back" @click="$router.back()">
-        <i class="iconfont icon-">back</i>
+        <i class="iconfont icon-communicate"></i>
       </a>
     </div>
     <AlertTip :alertText="alertText" v-show="alertShow" @closeTip="closeTip"/>
@@ -69,6 +69,9 @@
   import AlertTip from '../../components/AlertTip/AlertTip.vue'
   import axios from 'axios'
   import SIdentify  from './sidentify.vue'
+  import {reqPwdLogin, reqSmsLogin, reqLoginCode, reqUserInfo} from '../../api'
+  import {mapState ,mapActions} from 'vuex'
+
   export default {
     data(){
       return{
@@ -88,6 +91,7 @@
       }
     },
     computed:{
+
       rightPhone(){
         return /^1\d{10}$/.test(this.mobilePhone)
       }
@@ -118,31 +122,30 @@
       },
       //异步获取短信验证码
       async getCode(){
-      //如果当前没有计时
-      if(!this.computerTime){
-        //启动倒计时
-        this.computerTime=120
-         this.intervalId=setInterval(()=>{
-          this.computerTime--
-          if(this.computerTime<=0){
-            //停止计时
-            clearInterval(this.intervalId)
-          }
-        },1000)
-        //向指定手机号发送验证码信息
-        axios.get('http://server.campus.com/ucs/login/loginCode?mobilePhone='+this.mobilePhone).then((result) => {
-          if (result.data.status===220000){
+        //如果当前没有计时
+        if(!this.computerTime){
+          //启动倒计时
+          this.computerTime=120
+           this.intervalId=setInterval(()=>{
+            this.computerTime--
+            if(this.computerTime<=0){
+              //停止计时
+              clearInterval(this.intervalId)
+            }
+          },1000)
+          //向指定手机号发送验证码信息
+          const result=await reqLoginCode(this.mobilePhone)
+          if (result.status===220000) {
             //显示提示
-            this.showAlert(result.data.message)
+            this.showAlert(result.message)
             //停止倒计时
-            if(this.computerTime) {
+            if (this.computerTime) {
               this.computerTime = 0
               clearInterval(this.intervalId)
               this.intervalId = undefined
             }
           }
-        });
-      }
+        }
       },
       showAlert(alertText) {
       this.alertShow = true;
@@ -150,10 +153,10 @@
       },
       //异步登录
       async login(){
-        let result
+
         // 前台表单验证
         if(this.loginWay) {  // 短信登陆
-          /*const {rightPhone, phone, code} = this
+          const {rightPhone, mobilePhone, code} = this
           if(!this.rightPhone) {
             // 手机号不正确
             this.showAlert('手机号不正确')
@@ -162,32 +165,32 @@
             // 验证必须是6位数字
             this.showAlert('验证码必须是6位数字')
             return
-          }*/
+          }
           //发送ajax请求短信登录
-          axios.post('http://server.campus.com/ucs/login/codeLogin',
-            {
-              "code":this.code,
-              "mobilePhone":this.mobilePhone
-            }).then((result)=>{
-              //停止倒计时
-              if(this.computerTime){
-                this.computerTime=0
-                clearInterval(this.intervalId)
-                this.intervalId=undefined
+          const result=await reqSmsLogin(code,mobilePhone)
+          //停止倒计时
+          if(this.computerTime){
+            this.computerTime=0
+            clearInterval(this.intervalId)
+            this.intervalId=undefined
+          }
+          if (result===""){
+            this.showAlert('账号或验证码错误')
+          }else {
+            this.$router.replace('/profile')
+            this.returnValue = result
+            this.$cookies.set('CAMPUS_POST_BAR_NAME', this.returnValue, "30D", null, ".campus.com")
+            localStorage.setItem('token',this.returnValue)
+            this.$store.commit('setToken',this.returnValue)
+           /* axios.get('http://server.campus.com/ucs/login/user').then((result)=>{
+              if(result.status===200){
+                const userInfo=result.data
+                //将user保存到vuex的state中
+                this.$store.dispatch('recordUser',userInfo)
               }
-              if (result.data===""){
-                this.showAlert('账号或验证码错误')
-              }else {
-                this.$router.replace('/home')
-                this.returnValue=result.data
-                //console.log(this.returnValue)
-                //this.$cookies.set('CAMPUS_POST_BAR_NAME',this.returnValue,"30D")
-                this.$cookies.set('CAMPUS_POST_BAR_NAME',this.returnValue,"30D",null,".campus.com")
-              }
-          }).catch((error)=>{
-            this.showAlert('登陆失败')
-          })
-        } else {// 密码登陆
+            })*/
+          }
+        } else if(!this.loginWay) {// 密码登陆
           const {loginName, userPassword, captcha} = this
           if (!this.loginName) {
             // 用户名必须指定
@@ -202,35 +205,35 @@
             this.showAlert('验证码不正确！')
             return
           }
-          //发送请求密码登录
-          axios.post('http://server.campus.com/ucs/login/userLogin',
-            {
-              "loginName": this.loginName,
-              "userPassword": this.$md5(this.userPassword)
-            }).then((result)=>{
-            //根据结果数据处理
-            console.log(result)
-            //停止倒计时
-            if(this.computerTime){
-              this.computerTime=0
-              clearInterval(this.intervalId)
-              this.intervalId=undefined
-            }
-            if(result.data===""){
-              this.showAlert('账号或密码错误')
-              this.refreshCode()
-            }
-            else {
-              this.$router.replace('/home')
-              this.returnValue=result.data
-              //console.log(this.returnValue)
-              //this.$cookies.set('CAMPUS_POST_BAR_NAME1',this.returnValue,"30D")
-              this.$cookies.set('CAMPUS_POST_BAR_NAME',this.returnValue,"30D",null,".campus.com")
-            }
-          }).catch((error)=>{
+         //发送请求密码登录
+          const result=await reqPwdLogin(loginName,this.$md5(userPassword))
+          //停止倒计时
+          if(this.computerTime){
+            this.computerTime=0
+            clearInterval(this.intervalId)
+            this.intervalId=undefined
+          }
+          //console.log(result)
+          if (result===""){
             this.showAlert('登陆失败')
-          })
+            this.refreshCode()
+          }else {
+            this.$router.replace('/profile')
+            this.returnValue = result
+            this.$cookies.set('CAMPUS_POST_BAR_NAME', this.returnValue, "30D", null, ".campus.com")
+            localStorage.setItem('token',this.returnValue)
+            //将token保存到vuex
+            this.$store.commit('setToken',this.returnValue)
+            /* axios.get('http://server.campus.com/ucs/login/user').then((result)=>{
+               if(result.status===200){
+                 const userInfo=result.data
+                 //将user保存到vuex的state中
+                 this.$store.dispatch('recordUser',userInfo)
+               }
+             })*/
+          }
         }
+
       },
       // 关闭警告框
       closeTip () {
@@ -246,9 +249,9 @@
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
   .loginContainer
-    width 100%
+    width 10rem
     height 100%
-    background #fff
+    position relative
     .loginInner
       padding-top 60px
       width 80%
@@ -264,14 +267,14 @@
           text-align center
           >a
             color #333
-            font-size 14px
+            font-size 28px
             padding-bottom 4px
             &:first-child
               margin-right 40px
             &.on
               color darkorange
               font-weight 700
-              border-bottom 2px solid darkorange
+              border-bottom 4px solid darkorange
       .login_content
         >form
           >div
@@ -280,47 +283,48 @@
               display block
             input
               width 100%
-              height 100%
+              height 80px
               padding-left 10px
               box-sizing border-box
-              border 1px solid #ddd
-              border-radius 4px
+              border 1px solid #e4e4e4
+              border-radius 16px
               outline 0
-              font 400 14px Arial
+              font 400 26px Arial
               &:focus
                 border 1px solid darkorange
             .login_message
               position relative
-              margin-top 16px
-              height 48px
-              font-size 14px
+              margin-top 30px
+              height 80px
+              font-size 24px
               background #fff
               .get_verification
+                width 150px
                 position absolute
                 top 50%
-                right 10px
+                right 20px
                 transform translateY(-50%)
                 border 0
                 color #ccc
-                font-size 14px
+                font-size 20px
                 background transparent
                 &.right_phone
                   color black
             .login_verification
               position relative
-              margin-top 16px
-              height 48px
-              font-size 14px
+              margin-top 40px
+              height 80px
+              font-size 22px
               background #fff
               .switch_button
-                font-size 12px
+                font-size 22px
                 border 1px solid #ddd
-                border-radius 8px
+                border-radius 15px
                 transition background-color .3s,border-color .3s
                 padding 0 6px
-                width 30px
-                height 16px
-                line-height 16px
+                width 60px
+                height 30px
+                line-height 30px
                 color #fff
                 position absolute
                 top 50%
@@ -337,55 +341,60 @@
                   position absolute
                   top -1px
                   left -1px
-                  width 16px
-                  height 16px
+                  width 30px
+                  height 30px
                   border 1px solid #ddd
                   border-radius 50%
                   background #fff
                   box-shadow 0 2px 4px 0 rgba(0,0,0,.1)
                   transition transform .3s
                   &.right
-                    transform translateX(30px)
+                    transform translateX(45px)
             .login_hint
-              margin-top 12px
+              margin-top 22px
               color #999
-              font-size 14px
-              line-height 20px
+              font-size 24px
+              line-height 24px
               >a
                 color darkorange
           .login_submit
             display block
             width 100%
-            height 42px
+            height 65px
             margin-top 30px
-            border-radius 4px
+            border-radius 16px
             background darkorange
             color #fff
             text-align center
-            font-size 16px
-            line-height 42px
+            font-size 24px
+            line-height 65px
             border 0
         .about_us
           display block
-          font-size 12px
+          font-size 22px
           margin-top 20px
           text-align center
           color #999
       .go_back
         position absolute
-        top 5px
-        left 5px
-        width 30px
-        height 30px
+        top 10px
+        left 30px
+        text-decoration none
+        width 50px
+        height 50px
+        line-height 50px
+        text-align center
+        margin 3px 5px 0
+        color #ee9900
         >.iconfont
-          font-size 20px
-          color #999
-  .captcha{
-    width:124px;
-    height:31px;
-    border:1px solid rgba(186,186,186,1);
-  }
+          font-size 36px
+          color darkorange
   .get_verification{
     cursor: pointer;
+    width:120px;
+    height:70px;
+    border:1px solid rgba(186,186,186,1);
+    position absolute
+    top 10px
   }
 </style>

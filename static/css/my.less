@@ -1,0 +1,32 @@
+/*变量命名*/
+@color:pink;
+@font-size:16px;
+
+/*变量引用*/
+div{
+  background-color: @color;
+  font-size: @font-size;
+}
+/*嵌套*/
+.nav{
+  width: 100px;
+  height: 100px;
+  .logo{
+    background-color: #fff;
+  }
+  a{
+    color: red;
+    //绑定
+    &:hover{
+      color:blue;
+    }
+    /*伪类*/
+    &::before{
+
+    }
+  }
+}
+
+
+
+

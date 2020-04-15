@@ -43,32 +43,31 @@
     border-top: 1px  solid #e4e4e4;
     position: fixed;
     z-index:100;
-    left:0;
-    right: 0;
+    left:50%;
+    transform: translateX(-50%);
     bottom :0;
+    height: 90px;
     background-color :#fff;
-    width :100%;
-    height :50px;
+    width :10rem;
     display :flex;
   }
   .guide_item{
+    margin-top: 3px;
     display: flex;
     flex: 1;
     text-align: center;
     flex-direction: column;
     align-items: center;
-    margin: 5px;
     color: dimgray;
   }
   .guide_item.on{
     color: #0078D7;
   }
-  .guide_item span{
-    font-size: 13px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+  .guide_item :nth-child(2){
+    margin-top: 1px;
+    font-size: 22px;
   }
-  .guide_item .iconfont{
-    font-size:22px;
+  .iconfont{
+    font-size:40px;
   }
 </style>

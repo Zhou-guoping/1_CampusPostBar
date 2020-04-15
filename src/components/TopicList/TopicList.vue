@@ -1,6 +1,6 @@
 <template>
-    <div class="topic-container">
-      <ul class="topic_list">
+    <section class="topic-container">
+      <ul class="top_list">
         <li class="topic_li">
           <a>
             <div class="topic_head">
@@ -11,7 +11,10 @@
             <div class="topic_text">
               <p>至2月17日，全国累计确诊新冠肺炎xxxxx例，疑似xxxx例，治愈xxxx例子，死亡xxxx例。<span>#查看详情#</span></p>
             </div>
-            <div class="topicImg"></div>
+            <!--图片-->
+            <div class="topicImg">
+
+            </div>
           </a>
         </li>
         <li class="topic_li">
@@ -42,7 +45,7 @@
         </li>
         <div class="list_footer">已经到底啦</div>
       </ul>
-    </div>
+    </section>
 </template>
 
 <script>
@@ -50,8 +53,8 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  .topic-container{
-    margin-top:100px;
+  .topic_container{
+    width: 10rem;
   }
   .topicImg{
     width: 96%;
@@ -60,48 +63,52 @@
     background-size: 100% 100%;
     margin: 0 2% 2px;
   }
-
+  .top_list{
+    margin-top 135px
+  }
   .topic_li{
     margin-top:10px;
     border-bottom: 1px solid #e4e4e4;
   }
   .topic_num{
-  /*  display :inline-block;
-    width:25px;
-    height:25px;
-    border-radius :5px;*/
+    font-size:28px;
   }
   .topic_head{
-    margin: 10px 10px;
-    font-size :18px;
+    width 96%
+    margin: 10px 2%;
+    font-size :24px;
     color: #000
+    position: relative;
   }
   .topic_title{
     font-weight bold
     margin-left 15px
   }
   .topic_heat{
-    font-size 15px
+    font-size 20px
     color #7e8c8d
     position: absolute;
+    margin-top: 5px;
     right: 10px;
   }
   .topic_text{
-    margin: 8px 5px;
-    font-size: 16px;
+    width 96%
+    margin: 8px 2%;
+    font-size: 24px;
+    line-height:26px;
     color: #222222;
-    line-height: 18px;
   }
   .topic_text span{
     color #0086b3
   }
   .list_footer{
     width:100%;
-    height: 30px;
+    height: 50px;
     background: #e4e4e4;
     color: #7e8c8d;
-    margin-bottom: 50px;
+    margin-bottom: 80px;
     text-align: center;
     padding-top: 15px;
+    font-size: 20px;
   }
 </style>
